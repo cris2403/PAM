@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<?php
+include "../notroubeitings/php/BDconection.php";
+$conn = connectToDatabase("LocalHost", "root", "", "loja");
+
+include '../notroubeitings/php/UsersDataHandler.php';
+session_start();
+if(!isset($_SESSION['user'])){
+    header('location:../Login');
+}
+$user=$_SESSION['user'];
+?>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Not Roubeitings | <?php echo($user->name); ?></title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../notroubeitings/css/style.css">
+    <link rel="shortcut icon" href="../notroubeitings/logo.png">
+</head>
+<body>
+<nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
+    <div class="container">
+        <a class="navbar-brand" href="../notroubeitings/index.php">
+            <img src="../notroubeitings/images/logo.png" alt="Logo">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarsFurni">
+            <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+                <li class="nav-item ">
+                    <a class="nav-link" href="../notroubeitings/index.php">Home</a>
+                </li>
+                <li><a class="nav-link" href="../notroubeitings/shop.php">Shop</a></li>
+            </ul>
+            <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+                <li><a class="nav-link" href="#"><img src="../notroubeitings/images/user.svg"></a></li>
+                <li><a class="nav-link" href="../notroubeitings/cart.php"><img src="../notroubeitings/images/cart.svg"></a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css" integrity="sha256-2XFplPlrFClt0bIdPgpz8H7ojnk10H69xRqd9+uTShA=" crossorigin="anonymous" />
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="my-5">
+                <h3>O meu perfil</h3>
+                <hr>
+            </div>
+            <form class="file-upload" method="post" action="../notroubeitings/php/updateprofile.php">
+                <div class="row mb-5 gx-5">
+                    <div class="col-xxl-8 mb-5 mb-xxl-0">
+                        <div class="bg-secondary-soft px-4 py-5 rounded">
+                            <div class="row g-3">
+                                <h4 class="mb-4 mt-0">Detalhes de contato</h4>
+                                <div class="col-md-12">
+                                    <label class="form-label">Nome</label>
+                                    <input name="name" type="text" class="form-control" placeholder="" aria-label="Primeiro nome" value="<?php echo $user->name;?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Número de telemóvel</label>
+                                    <input name="tel" type="text" class="form-control" placeholder="" aria-label="Número de telefone" value="<?php echo $user->telephone;?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">NIF</label>
+                                    <input name="nif" readonly type="text" class="form-control" placeholder="" aria-label="Número de telemóvel" value="<?php echo $user->nif;?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="inputEmail4" class="form-label">Email</label>
+                                    <input name="email" type="email" readonly class="form-control" id="inputEmail4" value="<?php echo $user->email;?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Morada</label>
+                                    <?php if($user->address=='NULL'){
+                                        echo '<input name="address" type="text" class="form-control" placeholder="Não definido" aria-label="Número de telemóvel" value="">';
+                                    }else
+                                    {
+                                        echo '<input name="address" type="text" class="form-control" placeholder="" aria-label="Número de telemóvel" value="'.$user->address.'">';
+                                    }?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-4">
+                        <div class="bg-secondary-soft px-4 py-5 rounded">
+                            <div class="row g-3">
+                                <h4 class="mb-4 mt-0">Carregar sua foto de perfil</h4>
+                                <div class="text-center">
+                                    <div class="square position-relative display-2 mb-3">
+                                        <i class="fas fa-fw fa-user position-absolute top-50 start-50 translate-middle text-secondary"></i>
+                                    </div>
+                                    <input type="file" id="customFile" name="file" hidden="">
+                                    <label class="btn btn-success-soft btn-block" for="customFile">Carregar</label>
+                                    <button type="button" class="btn btn-danger-soft">Remover</button>
+                                    <p class="text-muted mt-3 mb-0"><span class="me-1">Nota:</span>Tamanho máximo 300px x 300px</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-5 gx-5">
+                    <div class="col-xxl-12">
+                        <div class="bg-secondary-soft px-4 py-5 rounded">
+                            <div class="row g-3">
+                                <h4 class="my-4">Alterar senha</h4>
+                                <div class="col-md-6">
+                                    <label for="exampleInputPassword1" class="form-label">Senha antiga *</label>
+                                    <input type="password" class="form-control" id="exampleInputPassword1">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="exampleInputPassword2" class="form-label">Nova senha *</label>
+                                    <input type="password" class="form-control" id="exampleInputPassword2">
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="exampleInputPassword3" class="form-label">Confirmar senha *</label>
+                                    <input type="password" class="form-control" id="exampleInputPassword3">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-5 gx-5">
+                    <div class="col-xxl-12">
+                        <div class="bg-secondary-soft px-4 py-5 rounded">
+                            <h4 class="my-4">Compras</h4>
+                        <?php
+                        $userID = $_SESSION['user']->id;
+                        $query = "SELECT s.S_ID, COUNT(i.I_ID) AS TotalItems, s.date, s.PaymentMethod
+          FROM sells s
+          LEFT JOIN itemsells i ON s.S_ID = i.S_ID
+          WHERE s.U_ID = :userID
+          GROUP BY s.S_ID, s.date, s.PaymentMethod";
+                        $stmt = $conn->prepare($query);
+                        $stmt->bindParam(':userID', $userID, PDO::PARAM_INT);
+                        $stmt->execute();
+                        echo "<table>";
+                        echo "<thead>";
+                        echo "<tr>";
+                        echo "<th>ID de compra</th>";
+                        echo "<th>Numero de itens</th>";
+                        echo "<th>Data</th>";
+                        echo "<th>Metedo de pagamento</th>";
+                        echo "</tr>";
+                        echo "</thead>";
+                        echo "<tbody>";
+                        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        if (!empty($rows)) {
+                            foreach ($rows as $row) {
+                                echo "<tr>";
+                                echo "<td>" . $row['S_ID'] . "</td>";
+                                echo "<td>" . $row['TotalItems'] . "</td>";
+                                echo "<td>" . $row['date'] . "</td>";
+                                echo "<td>" . $row['PaymentMethod'] . "</td>";
+                                echo "</tr>";
+                            }
+                        } else {
+                            echo "<td colspan='4' class='no-border'>Nenhuma compra registrada.</td>";
+                        }
+                        echo "</tbody>";
+                        echo "</table>";
+                        ?>
+                        </tbody>
+                    </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="gap-3 d-md-flex justify-content-md-end text-center">
+                    <button type="button" class="btn btn-danger-soft btn-lg">Excluir perfil</button>
+                    <button type="submit" class="btn btn-primary btn-lg">Atualizar perfil</button>
+                </div>
+            </form>
+            <br>
+                <div class="gap-3 d-md-flex justify-content-md-end text-center">
+                    <button class="btn btn-warnings btn-lg" onclick="location.href='../notroubeitings/php/logout.php'">Logout</button>
+                </div>
+            <br>
+        </div>
+    </div>
+</div>
+</body>
+</html>
